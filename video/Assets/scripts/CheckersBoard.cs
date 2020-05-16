@@ -32,7 +32,7 @@ public class CheckersBoard : MonoBehaviour
     {
         UpdateMouseOver();
 
-        // if my turn
+        if((isWhite)?isWhiteTurn:!isWhiteTurn)
         {
             int x = (int)moseOver.x;
             int y = (int)moseOver.y;
@@ -41,14 +41,13 @@ public class CheckersBoard : MonoBehaviour
             {
                 UpdatePieceDrag(selectedPiece);
             }
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 SelectPiece(x, y);
             }
             if (Input.GetMouseButtonUp(0))
             {
                 TryMove((int)startDrag.x, (int)startDrag.y, x, y);
-                Debug.Log("going");
             }
         }
     }
@@ -60,7 +59,7 @@ public class CheckersBoard : MonoBehaviour
         piece p = pieces[x, y];
         if (p != null && p.isWhite == isWhite)
         {
-            if(forcedPieces.Count == 0)
+            if (forcedPieces.Count == 0)
             {
                 selectedPiece = p;
                 startDrag = moseOver;
@@ -100,7 +99,7 @@ public class CheckersBoard : MonoBehaviour
             for (int x = 0; x < 8; x += 2)
             {
                 //gamerate piece
-                GeneratePiece((oddRow) ? x : x+1, y);
+                GeneratePiece((oddRow) ? x : x + 1, y);
             }
         }
 
@@ -126,7 +125,7 @@ public class CheckersBoard : MonoBehaviour
     private void GeneratePiece(int x, int y)
     {
         bool isWhite = (y > 3) ? false : true;
-        GameObject go = Instantiate((isWhite)?whitePiece:blackPiece) as GameObject;
+        GameObject go = Instantiate((isWhite) ? whitePiece : blackPiece) as GameObject;
         go.transform.SetParent(transform);
         piece p = go.GetComponent<piece>();
         pieces[x, y] = p;
@@ -138,9 +137,9 @@ public class CheckersBoard : MonoBehaviour
         int y = (int)endDrag.y;
 
         // Promotions
-        if (selectedPiece !=null)
+        if (selectedPiece != null)
         {
-            if(selectedPiece.isWhite && !selectedPiece.isKing && y == 7)
+            if (selectedPiece.isWhite && !selectedPiece.isKing && y == 7)
             {
                 selectedPiece.isKing = true;
                 selectedPiece.transform.Rotate(Vector3.right * 180);
@@ -155,11 +154,10 @@ public class CheckersBoard : MonoBehaviour
         selectedPiece = null;
         startDrag = Vector2.zero;
 
-        if (ScanForPossibleMove(selectedPiece, x, y).Count != 0 && hasKilled)
+        if (ScanForPossibleMove(selectedPiece,x, y).Count != 0 && hasKilled)
             return;
 
         isWhiteTurn = !isWhiteTurn;
-        isWhite = !isWhite;
         hasKilled = false;
         CheckVictory();
     }
@@ -167,7 +165,7 @@ public class CheckersBoard : MonoBehaviour
     {
 
     }
-    private List<piece> ScanForPossibleMove(piece p, int x, int y)
+    private List<piece> ScanForPossibleMove(piece p,int x, int y)
     {
         forcedPieces = new List<piece>();
 
@@ -179,7 +177,6 @@ public class CheckersBoard : MonoBehaviour
     private List<piece> ScanForPossibleMove()
     {
         forcedPieces = new List<piece>();
-
         // check all the pieces
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
@@ -192,27 +189,27 @@ public class CheckersBoard : MonoBehaviour
     {
         p.transform.position = (Vector3.right * x) + (Vector3.forward * y) + boardOfset + pieceOfset;
     }
-    private void TryMove(int x1,int y1,int x2,int y2)
+    private void TryMove(int x1, int y1, int x2, int y2)
     {
         forcedPieces = ScanForPossibleMove();
 
         startDrag = new Vector2(x1, y1);
-        endDrag = new Vector2(x2, y1);
+        endDrag = new Vector2(x2, y2);
         selectedPiece = pieces[x1, y1];
 
-        if(x2 < 0 || x2 >= 8 || y2 < 0 || y2 >= 8)
+        if (x2 < 0 || x2 >= 8 || y2 < 0 || y2 >= 8)
         {
             if (selectedPiece != null)
-                movePiece(selectedPiece, x1,y1);
+                movePiece(selectedPiece, x1, y1);
             startDrag = Vector2.zero;
             selectedPiece = null;
             return;
         }
 
-        if(selectedPiece != null)
+        if (selectedPiece != null)
         {
             // if it has not moved
-            if(endDrag == startDrag)
+            if (endDrag == startDrag)
             {
                 movePiece(selectedPiece, x1, y1);
                 startDrag = Vector2.zero;
@@ -221,10 +218,10 @@ public class CheckersBoard : MonoBehaviour
             }
 
             // check if its a valid move
-            if(selectedPiece.ValidMove(pieces,x1,y1,x2,y2))
+            if (selectedPiece.ValidMove(pieces, x1, y1, x2, y2))
             {
                 //did we kill??
-                if(Mathf.Abs(x2-x1) == 2)
+                if (Mathf.Abs(x2 - x1) == 2)
                 {
                     piece p = pieces[(x1 + x2) / 2, (y1 + y2) / 2];
                     if (p != null)
@@ -236,7 +233,7 @@ public class CheckersBoard : MonoBehaviour
                 }
 
                 // where we suposed to kill??
-                if(forcedPieces.Count != 0 && !hasKilled)
+                if (forcedPieces.Count != 0 && !hasKilled)
                 {
                     movePiece(selectedPiece, x1, y1);
                     startDrag = Vector2.zero;
