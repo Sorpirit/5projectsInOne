@@ -32,7 +32,7 @@ public class CheckersBoard : MonoBehaviour
     {
         UpdateMouseOver();
 
-        if((isWhite)?isWhiteTurn:!isWhiteTurn)
+        //if((isWhite)?isWhiteTurn:!isWhiteTurn)
         {
             int x = (int)moseOver.x;
             int y = (int)moseOver.y;
@@ -151,12 +151,25 @@ public class CheckersBoard : MonoBehaviour
             }
         }
 
-        selectedPiece = null;
         startDrag = Vector2.zero;
 
-        if (ScanForPossibleMove(selectedPiece,x, y).Count != 0 && hasKilled)
+        if (ScanForPossibleMove(selectedPiece, x, y).Count != 0 && hasKilled)
+        {
+            if(selectedPiece == whitePiece)
+            {
+                Debug.Log("white");
+            }
+            else
+            {
+                Debug.Log("black");
+            }
+            Debug.Log("going");
             return;
+        }
 
+        selectedPiece = null;
+
+        isWhite = !isWhite;
         isWhiteTurn = !isWhiteTurn;
         hasKilled = false;
         CheckVictory();
